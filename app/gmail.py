@@ -1,4 +1,5 @@
 import base64
+import time
 from email.message import EmailMessage
 
 from google.oauth2.credentials import Credentials
@@ -36,9 +37,11 @@ class Gmail:
         return ids
 
     def list_new_message_ids(self, max_results: int = 10) -> list[str]:
+        # Gmail's after: accepts epoch seconds, so older mail is never fetched.
+        cutoff = int(time.time()) - settings.max_message_age_minutes * 60
         response = self.users.messages().list(
             userId="me",
-            q=f"in:inbox -label:{PROCESSED_LABEL}",
+            q=f"in:inbox -label:{PROCESSED_LABEL} after:{cutoff}",
             maxResults=max_results,
         ).execute()
         return [message["id"] for message in response.get("messages", [])]
