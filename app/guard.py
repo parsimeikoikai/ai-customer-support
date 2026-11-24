@@ -3,13 +3,23 @@ from email.utils import parseaddr
 
 
 def skip_reason(
-    message: dict, headers: dict[str, str], own_address: str, max_age_minutes: int
+    message: dict,
+    headers: dict[str, str],
+    own_address: str,
+    max_age_minutes: int,
+    allowed_senders: set[str] = frozenset(),
 ) -> str | None:
-    """Return why the bot must not answer this message, or None when it may."""
+    """Return why the bot must not answer this message, or None when it may.
+
+    allowed_senders: lowercase addresses the bot may answer; empty means everyone.
+    """
+    sender = parseaddr(headers.get("from", ""))[1].lower()
     if "SENT" in message.get("labelIds", []):
         return "sent by us"
-    if parseaddr(headers.get("from", ""))[1].lower() == own_address.lower():
+    if sender == own_address.lower():
         return "from our own address"
+    if allowed_senders and sender not in allowed_senders:
+        return "sender not in allowed senders"
     auto_submitted = headers.get("auto-submitted", "no").strip().lower()
     if auto_submitted != "no":
         return f"auto-submitted: {auto_submitted}"

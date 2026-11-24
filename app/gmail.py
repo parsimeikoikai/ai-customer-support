@@ -39,9 +39,13 @@ class Gmail:
     def list_new_message_ids(self, max_results: int = 10) -> list[str]:
         # Gmail's after: accepts epoch seconds, so older mail is never fetched.
         cutoff = int(time.time()) - settings.max_message_age_minutes * 60
+        query = f"in:inbox -label:{PROCESSED_LABEL} after:{cutoff}"
+        if settings.allowed_sender_set:
+            # Only fetch mail from allowed senders, so other mail is never touched.
+            query += " from:(" + " OR ".join(sorted(settings.allowed_sender_set)) + ")"
         response = self.users.messages().list(
             userId="me",
-            q=f"in:inbox -label:{PROCESSED_LABEL} after:{cutoff}",
+            q=query,
             maxResults=max_results,
         ).execute()
         return [message["id"] for message in response.get("messages", [])]

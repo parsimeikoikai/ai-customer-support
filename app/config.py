@@ -15,8 +15,14 @@ class Settings(BaseSettings):
     poll_interval_seconds: int = 60
     # Only emails received within this many minutes are processed or answered.
     max_message_age_minutes: int = 60
+    # Comma-separated sender addresses the bot may answer. Empty means everyone.
+    allowed_senders: str = ""
     dashboard_username: str = "admin"
     dashboard_password: str = ""
+
+    @property
+    def allowed_sender_set(self) -> set[str]:
+        return {a.strip().lower() for a in self.allowed_senders.split(",") if a.strip()}
 
 
 settings = Settings()
