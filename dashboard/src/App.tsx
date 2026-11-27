@@ -1,15 +1,48 @@
-import { Button } from '@/components/ui/button'
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { isLoggedIn, logout } from "@/lib/api"
+import { EventsPage } from "@/pages/events"
+import { KnowledgeBasePage } from "@/pages/knowledge-base"
+import { LoginPage } from "@/pages/login"
+import { TicketsPage } from "@/pages/tickets"
 
-function App() {
+export default function App() {
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn())
+
+  if (!loggedIn) {
+    return <LoginPage onLogin={() => setLoggedIn(true)} />
+  }
+
+  function logOut() {
+    logout()
+    setLoggedIn(false)
+  }
+
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-4 p-6">
-      <h1 className="text-2xl font-semibold">Support Dashboard</h1>
-      <p className="text-muted-foreground">Nothing here yet.</p>
-      <Button variant="outline" asChild>
-        <a href="/health">API health</a>
-      </Button>
-    </main>
+    <div className="mx-auto max-w-6xl p-6">
+      <header className="mb-6 flex items-center justify-between">
+        <h1 className="text-lg font-semibold">Harbor &amp; Pine support</h1>
+        <Button variant="outline" onClick={logOut}>
+          Log out
+        </Button>
+      </header>
+      <Tabs defaultValue="events">
+        <TabsList>
+          <TabsTrigger value="events">Events</TabsTrigger>
+          <TabsTrigger value="tickets">Tickets</TabsTrigger>
+          <TabsTrigger value="knowledge-base">Knowledge base</TabsTrigger>
+        </TabsList>
+        <TabsContent value="events" className="mt-4">
+          <EventsPage />
+        </TabsContent>
+        <TabsContent value="tickets" className="mt-4">
+          <TicketsPage />
+        </TabsContent>
+        <TabsContent value="knowledge-base" className="mt-4">
+          <KnowledgeBasePage />
+        </TabsContent>
+      </Tabs>
+    </div>
   )
 }
-
-export default App

@@ -1,21 +1,21 @@
-import path from 'node:path'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { resolve } from "node:path"
+import tailwindcss from "@tailwindcss/vite"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": resolve(import.meta.dirname, "./src"),
     },
   },
   server: {
-    // In development, send API calls to the FastAPI backend.
+    // Send API calls to FastAPI during development. 127.0.0.1, not localhost:
+    // Node can resolve localhost to IPv6 ::1, where fastapi dev does not listen.
     proxy: {
-      '/api': 'http://localhost:8000',
-      '/health': 'http://localhost:8000',
+      "/api": "http://127.0.0.1:8000",
     },
   },
 })

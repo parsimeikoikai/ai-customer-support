@@ -106,7 +106,13 @@ npm install
 npm run dev
 ```
 
-It runs on http://localhost:5173 and forwards `/api` and `/health` to the backend on port 8000. Add components with `npx shadcn@latest add <component>`.
+It runs on http://localhost:5173 and forwards `/api` to the backend on port 8000. Log in with `DASHBOARD_USERNAME` and `DASHBOARD_PASSWORD` from `.env`, and restart the API after changing them.
+
+The dashboard has three tabs:
+
+- **Events**: every email the poller handled, with a **Check inbox now** button that runs one poll right away
+- **Tickets**: each conversation, with the proposed action for escalated tickets
+- **Knowledge base**: edit entries; the agent uses the new text on the next email Add components with `npx shadcn@latest add <component>`.
 
 ### Run with Docker
 
@@ -116,12 +122,12 @@ One command builds the dashboard and starts the API and the poller:
 docker compose up --build
 ```
 
-- Dashboard: http://127.0.0.1:8000
-- API docs: http://127.0.0.1:8000/docs
+- Dashboard: http://127.0.0.1:8080
+- API docs: http://127.0.0.1:8080/docs
 - Logs: `docker compose logs -f poller`
 - Stop: `docker compose down`
 
-Both containers read their settings from `.env`, so secrets are never copied into the image. The port is bound to `127.0.0.1` only. On a VPS, open the dashboard through an SSH tunnel: `ssh -L 8000:localhost:8000 you@your-server`.
+Both containers read their settings from `.env`, so secrets are never copied into the image. The port is bound to `127.0.0.1` only. On a VPS, open the dashboard through an SSH tunnel: `ssh -L 8080:localhost:8080 you@your-server`, then go to http://localhost:8080. Stop any poller running on your laptop first, or two pollers answer the same inbox.
 
 ## Project structure
 
