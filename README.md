@@ -90,15 +90,61 @@ uv run fastapi dev app/main.py
 - Docs: http://127.0.0.1:8000/docs
 - Health check: http://127.0.0.1:8000/health
 
+Start the Gmail poller in a second terminal:
+
+```bash
+uv run python -m app.poller
+```
+
+### Dashboard
+
+The dashboard is a [Vite](https://vite.dev/) + React + [shadcn/ui](https://ui.shadcn.com/) app in `dashboard/`. For development with hot reload:
+
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+
+It runs on http://localhost:5173 and forwards `/api` and `/health` to the backend on port 8000. Add components with `npx shadcn@latest add <component>`.
+
+### Run with Docker
+
+One command builds the dashboard and starts the API and the poller:
+
+```bash
+docker compose up --build
+```
+
+- Dashboard: http://127.0.0.1:8000
+- API docs: http://127.0.0.1:8000/docs
+- Logs: `docker compose logs -f poller`
+- Stop: `docker compose down`
+
+Both containers read their settings from `.env`, so secrets are never copied into the image. The port is bound to `127.0.0.1` only. On a VPS, open the dashboard through an SSH tunnel: `ssh -L 8000:localhost:8000 you@your-server`.
+
 ## Project structure
 
 ```
 ai-customer-support/
 ├── app/
-│   ├── config.py      # Settings loaded from environment variables
-│   └── main.py        # FastAPI application
-├── .env.example       # Environment variable template
-├── pyproject.toml     # Dependencies
+│   ├── ai/                # Classifier, support agent, rules, and decide()
+│   ├── config.py          # Settings loaded from environment variables
+│   ├── db.py              # Supabase (Postgres) queries
+│   ├── gmail.py           # Gmail API client
+│   ├── guard.py           # Emails the bot must never answer
+│   ├── main.py            # FastAPI application, also serves the dashboard
+│   ├── pipeline.py        # Handles one email from start to finish
+│   └── poller.py          # Checks the inbox on a schedule
+├── dashboard/             # Vite + React + shadcn/ui dashboard
+├── evals/                 # Golden emails and the eval runner
+├── knowledge_base/        # Knowledge base content, seeded into Supabase
+├── scripts/               # Gmail token and knowledge base seed scripts
+├── supabase/              # Database migrations
+├── Dockerfile             # Builds the dashboard, then the Python backend
+├── docker-compose.yml     # Runs the api and poller services
+├── .env.example           # Environment variable template
+├── pyproject.toml         # Dependencies
 └── README.md
 ```
 

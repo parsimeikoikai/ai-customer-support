@@ -1,0 +1,25 @@
+# Start everything with: docker compose up --build
+services:
+  api:
+    build: .
+    image: ai-customer-support
+    env_file: .env
+    ports:
+      # Bound to localhost only. On a VPS, reach it through an SSH tunnel:
+      #   ssh -L 8000:localhost:8000 you@your-server
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  poller:
+    # Same image as api, so it is built once.
+    image: ai-customer-support
+    env_file: .env
+    command: ["python", "-m", "app.poller"]
+    depends_on:
+      - api
+    restart: unless-stopped

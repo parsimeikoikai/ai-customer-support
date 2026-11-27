@@ -14,6 +14,9 @@ Sections:
 - shipping: delivery, tracking, and shipping of replacement parts
 - other: anything else
 
+A damaged, missing, or wrong part of a paddle board or a shelf belongs to that product's section,
+not returns-and-warranty. A request to return an item or get money back is returns-and-warranty.
+
 Set needs_human to true when the customer:
 - is angry, threatens a bad review, or uses abusive language
 - asks for a refund, money back, or a chargeback

@@ -1,0 +1,21 @@
+# Secrets: passed in at runtime through env_file, never baked into the image.
+.env
+.env.*
+!.env.example
+credentials.json
+
+# Local environments and build output
+.venv
+__pycache__
+*.py[oc]
+dashboard/node_modules
+dashboard/dist
+
+# Not needed in the image
+.git
+.vscode
+.idea
+.DS_Store
+evals
+supabase
+*.ipynb
